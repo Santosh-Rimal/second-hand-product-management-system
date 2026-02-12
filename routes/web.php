@@ -38,7 +38,7 @@ Route::middleware(['auth','verified'])->group(function () {
         ]);
     })->name('userdashboard');
 
-Route::get('user/orders',[UserOrderController::class,'userorde                                                                                                                          rs'])->name('userorders');
+Route::get('user/orders',[UserOrderController::class,'userorders'])->name('userorders');
 Route::get('user/orders/details/{uuid}',[UserOrderController::class,'userorderdetails'])->name('userorderdetails');
 Route::get('user/orders/completed',[UserOrderController::class,'usercompletedorders'])->name('usercompletedorders');
 Route::get('user/orders/pending',[UserOrderController::class,'userpendingorders'])->name('userpendingorders');
