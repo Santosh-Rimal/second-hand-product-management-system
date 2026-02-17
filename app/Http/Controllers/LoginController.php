@@ -86,4 +86,44 @@ class LoginController extends Controller
             ]);
         }
     }
+
+    /**
+     * Handle an incoming registration request.
+     */
+    public function store(Request $request)
+    {
+        // 1. Validate input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'password' => ['required', 'confirmed'],
+        ]);
+
+        // 2. Generate salt
+        $salt = $this->saltgenerator();
+
+        // 3. Hash password with salt
+        $hashedPassword = $this->customHashPassword($request->password, $salt);
+
+        // 5. Create user
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $hashedPassword,
+            'salt' => $salt,
+            'roles' => 'user',
+        ]);
+
+
+        // 7. Log the user in
+       Auth::login($user);
+
+        $request->session()->regenerate();
+
+        if ($user->roles->value === 'admin') { // assuming relationship `role()`
+            return redirect()->route('dashboard');
+        }
+
+        return redirect()->route('userdashboard');
+    }
 }

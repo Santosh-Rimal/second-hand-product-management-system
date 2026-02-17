@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Cart;
-use Inertia\Inertia;
+use App\Models\Product;
+use App\Observers\ProductObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use Inertia\Inertia;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Product::observe(ProductObserver::class);
         Inertia::share([
         'appName' => config('app.name'),
         'hello'=>"hello",

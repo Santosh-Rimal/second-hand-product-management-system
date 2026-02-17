@@ -11,8 +11,10 @@ use App\Http\Controllers\frontend\CartController;
 
 Route::get('/', function () {
     // return Product::with(['category', 'seller'])->limit(10)->get();
+    $products = Product::with(['category', 'seller'])->withSum('orderItems as total_sold', 'quantity')->get();
+    // dd($products->toArray());
     return Inertia::render('frontend/welcome', [
-        'products' => Product::with(['category', 'seller'])->limit(10)->get(),
+        'products' => $products,
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('home');
@@ -21,7 +23,7 @@ Route::get('/', function () {
 Route::get('/products', function () {
     return Inertia::render('frontend/products/products', [
         'categories'=>\App\Models\Category::get(),
-        'products' => Product::with(['category', 'seller'])->get(),
+        'products' => Product::with(['category', 'seller'])->withSum('orderItems as total_sold', 'quantity')->get(),
         'canRegister' => Features::enabled(Features::registration()),
     ]);
 })->name('products');
@@ -58,8 +60,9 @@ Route::get('/about',function(){
 
 Route::get('/product/details/{id}', function ($id) {
     // return Product::with(['category', 'seller'])->findOrFail($id);
+    $product = Product::with(['category', 'seller'])->findOrFail($id); 
     return Inertia::render('frontend/products/detail', [
-        'product' => Product::with(['category', 'seller'])->findOrFail($id),
+        'product' => $product,
     ]);
 })->name('details');
 
@@ -68,6 +71,7 @@ Route::get('/product/details/{id}', function ($id) {
 
 Route::get('/signinform',[LoginController::class,'signinform'])->name('signinform');
 Route::post('/signin',[LoginController::class,'signin'])->name('signin');
+Route::post('/signup',[LoginController::class,'store'])->name('signup');
 
 
 

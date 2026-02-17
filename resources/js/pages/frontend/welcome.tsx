@@ -11,6 +11,8 @@ interface Products {
     is_active: boolean,
     description: string,
     quantity: number,
+    views: number,
+    total_sold: number,
     seller_id: number,
     seller: {
         name: string,
@@ -53,6 +55,27 @@ export default function Welcome({
             return [];
         }
     };
+
+    // -----------------------algorithm start----------------------------
+    // 1. Find maximum values for normalization
+    const maxViews = Math.max(...products.map(p => p.views ?? 0), 1);
+    const maxSold = Math.max(...products.map(p => p.total_sold ?? 0), 1);
+
+    // 2. Define weights (adjust as you like)
+    const weightViews = 0.5;
+    const weightSold = 0.5;
+
+    // 3. Compute scores and sort
+    const sortedProducts = [...products]
+        .map(product => {
+            const viewsNorm = (product.views ?? 0) / maxViews;
+            const soldNorm = (product.total_sold ?? 0) / maxSold;
+            const score = viewsNorm * weightViews + soldNorm * weightSold;
+            return { ...product, score };
+        })
+        .sort((a, b) => b.score - a.score);
+
+    // -----------------------algorithm end----------------------------
 
 
     return (
@@ -115,8 +138,8 @@ export default function Welcome({
 
 
 
-                                        {products?.length > 0 ? (
-                                            products.map((product) => (
+                                        {sortedProducts?.length > 0 ? (
+                                            sortedProducts.map((product) => (
                                                 <div
                                                     key={product.id}
                                                     className="group overflow-hidden rounded-xl border border-[#e3e3e0] bg-white transition-all hover:border-[#f53003] hover:shadow-lg dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:hover:border-[#FF4433]"
@@ -238,189 +261,6 @@ export default function Welcome({
                                             <p className="text-center text-gray-500">No products found.</p>
                                         )}
 
-
-
-
-
-
-                                        {/* Product 2 */}
-
-                                        {/* <div className="group overflow-hidden rounded-xl border border-[#e3e3e0] bg-white transition-all hover:border-[#f53003] hover:shadow-lg dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:hover:border-[#FF4433]">
-                                            <div className="relative h-48 overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20">
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="h-32 w-40 rounded-lg bg-gradient-to-br from-amber-200 to-amber-300 shadow-inner dark:from-amber-700 dark:to-amber-800">
-                                                        <div className="flex h-full items-center justify-center">
-                                                            <svg className="h-16 w-16 text-amber-600 dark:text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#f53003] backdrop-blur-sm dark:bg-black/90 dark:text-[#FF4433]">
-                                                    Furniture
-                                                </div>
-                                            </div>
-                                            <div className="p-4">
-                                                <div className="mb-2 flex items-center justify-between">
-                                                    <h3 className="font-medium">Modern Leather Sofa</h3>
-                                                    <span className="text-lg font-bold text-[#f53003] dark:text-[#FF4433]">
-                                                        $450
-                                                    </span>
-                                                </div>
-                                                <p className="mb-4 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                                    Genuine leather, excellent condition. 3-seater with matching pillows.
-                                                </p> */}
-
-                                        {/* Added Buttons Section */}
-                                        {/* <div className="mb-4 flex flex-wrap gap-2">
-                                                    <button className="flex-1 rounded-lg bg-gradient-to-r from-[#f53003] to-[#ff6b35] px-3 py-2 text-xs font-medium text-white transition-all hover:from-[#d42900] hover:to-[#e64a19] dark:from-[#FF4433] dark:to-[#FF6B35]">
-                                                        Buy Now
-                                                    </button>
-                                                    <button className="flex-1 rounded-lg border border-[#f53003] px-3 py-2 text-xs font-medium text-[#f53003] transition-all hover:bg-[#f53003] hover:text-white dark:border-[#FF4433] dark:text-[#FF4433] dark:hover:bg-[#FF4433] dark:hover:text-white">
-                                                        Add to Cart
-                                                    </button>
-                                                    <button className="w-full rounded-lg border border-[#e3e3e0] px-3 py-2 text-xs font-medium text-[#706f6c] transition-all hover:border-[#f53003] hover:text-[#f53003] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:border-[#FF4433] dark:hover:text-[#FF4433]">
-                                                        View Details
-                                                    </button>
-                                                </div> */}
-
-                                        {/* <div className="flex items-center justify-between text-sm">
-                                                    <div className="flex items-center gap-1">
-                                                        <div className="flex">
-                                                            {[...Array(5)].map((_, i) => (
-                                                                <svg key={i} className="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                                </svg>
-                                                            ))}
-                                                            <svg className="h-4 w-4 text-gray-300 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                            </svg>
-                                                        </div>
-                                                        <span className="ml-1 font-medium">4.5</span>
-                                                    </div>
-                                                    <span className="text-[#706f6c] dark:text-[#A1A09A]">1 week ago</span>
-                                                </div>
-                                            </div>
-                                        </div> */}
-
-                                        {/* Product 3 */}
-                                        {/* <div className="group overflow-hidden rounded-xl border border-[#e3e3e0] bg-white transition-all hover:border-[#f53003] hover:shadow-lg dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:hover:border-[#FF4433]">
-                                            <div className="relative h-48 overflow-hidden bg-gradient-to-br from-brown-50 to-brown-100 dark:from-brown-900/20 dark:to-brown-800/20">
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="h-32 w-32 rounded-lg bg-gradient-to-br from-brown-300 to-brown-400 shadow-inner dark:from-brown-700 dark:to-brown-800">
-                                                        <div className="flex h-full items-center justify-center">
-                                                            <svg className="h-16 w-16 text-brown-600 dark:text-brown-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#f53003] backdrop-blur-sm dark:bg-black/90 dark:text-[#FF4433]">
-                                                    Clothing
-                                                </div>
-                                            </div>
-                                            <div className="p-4">
-                                                <div className="mb-2 flex items-center justify-between">
-                                                    <h3 className="font-medium">Designer Leather Jacket</h3>
-                                                    <span className="text-lg font-bold text-[#f53003] dark:text-[#FF4433]">
-                                                        $45
-                                                    </span>
-                                                </div>
-                                                <p className="mb-4 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                                    Genuine leather, size M. Minimal wear, perfect condition.
-                                                </p> */}
-
-                                        {/* Added Buttons Section */}
-                                        {/* <div className="mb-4 flex flex-wrap gap-2">
-                                                    <button className="flex-1 rounded-lg bg-gradient-to-r from-[#f53003] to-[#ff6b35] px-3 py-2 text-xs font-medium text-white transition-all hover:from-[#d42900] hover:to-[#e64a19] dark:from-[#FF4433] dark:to-[#FF6B35]">
-                                                        Buy Now
-                                                    </button>
-                                                    <button className="flex-1 rounded-lg border border-[#f53003] px-3 py-2 text-xs font-medium text-[#f53003] transition-all hover:bg-[#f53003] hover:text-white dark:border-[#FF4433] dark:text-[#FF4433] dark:hover:bg-[#FF4433] dark:hover:text-white">
-                                                        Add to Cart
-                                                    </button>
-                                                    <button className="w-full rounded-lg border border-[#e3e3e0] px-3 py-2 text-xs font-medium text-[#706f6c] transition-all hover:border-[#f53003] hover:text-[#f53003] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:border-[#FF4433] dark:hover:text-[#FF4433]">
-                                                        View Details
-                                                    </button>
-                                                </div> 
-
-                                                <div className="flex items-center justify-between text-sm">
-                                                    <div className="flex items-center gap-1">
-                                                        <div className="flex">
-                                                            {[...Array(5)].map((_, i) => (
-                                                                <svg key={i} className="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                                </svg>
-                                                            ))}
-                                                        </div>
-                                                        <span className="ml-1 font-medium">4.9</span>
-                                                    </div>
-                                                    <span className="text-[#706f6c] dark:text-[#A1A09A]">3 days ago</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                                    */}
-
-                                        {/* Product 4 */}
-
-                                        {/* <div className="group overflow-hidden rounded-xl border border-[#e3e3e0] bg-white transition-all hover:border-[#f53003] hover:shadow-lg dark:border-[#3E3E3A] dark:bg-[#1c1c1a] dark:hover:border-[#FF4433]">
-
-                                            <div className="relative h-48 overflow-hidden bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20">
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="h-32 w-40 rounded-lg bg-gradient-to-br from-green-300 to-green-400 shadow-inner dark:from-green-700 dark:to-green-800">
-                                                        <div className="flex h-full items-center justify-center">
-                                                            <svg className="h-16 w-16 text-green-600 dark:text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-[#f53003] backdrop-blur-sm dark:bg-black/90 dark:text-[#FF4433]">
-                                                    Sports
-                                                </div>
-                                            </div>
-                                            <div className="p-4">
-                                                <div className="mb-2 flex items-center justify-between">
-                                                    <h3 className="font-medium">Mountain Bike</h3>
-                                                    <span className="text-lg font-bold text-[#f53003] dark:text-[#FF4433]">
-                                                        $120
-                                                    </span>
-                                                </div>
-                                                <p className="mb-4 text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                                                    21-speed mountain bike, aluminum frame. Recently serviced.
-                                                </p>  */}
-
-                                        {/* Added Buttons Section */}
-                                        {/* <div className="mb-4 flex flex-wrap gap-2">
-                                                    <button className="flex-1 rounded-lg bg-gradient-to-r from-[#f53003] to-[#ff6b35] px-3 py-2 text-xs font-medium text-white transition-all hover:from-[#d42900] hover:to-[#e64a19] dark:from-[#FF4433] dark:to-[#FF6B35]">
-                                                        Buy Now
-                                                    </button>
-                                                    <button className="flex-1 rounded-lg border border-[#f53003] px-3 py-2 text-xs font-medium text-[#f53003] transition-all hover:bg-[#f53003] hover:text-white dark:border-[#FF4433] dark:text-[#FF4433] dark:hover:bg-[#FF4433] dark:hover:text-white">
-                                                        Add to Cart
-                                                    </button>
-                                                    <button className="w-full rounded-lg border border-[#e3e3e0] px-3 py-2 text-xs font-medium text-[#706f6c] transition-all hover:border-[#f53003] hover:text-[#f53003] dark:border-[#3E3E3A] dark:text-[#A1A09A] dark:hover:border-[#FF4433] dark:hover:text-[#FF4433]">
-                                                        View Details
-                                                    </button>
-                                                </div>
-
-                                                <div className="flex items-center justify-between text-sm">
-                                                    <div className="flex items-center gap-1">
-                                                        <div className="flex">
-                                                            {[...Array(5)].map((_, i) => (
-                                                                <svg key={i} className="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                                </svg>
-                                                            ))}
-                                                            <svg className="h-4 w-4 text-gray-300 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                            </svg>
-                                                        </div>
-                                                        <span className="ml-1 font-medium">4.7</span>
-                                                    </div>
-                                                    <span className="text-[#706f6c] dark:text-[#A1A09A]">5 days ago</span>
-                                                </div>
-                                            </div>
-                                             */}
 
                                     </div>
                                 </div>
