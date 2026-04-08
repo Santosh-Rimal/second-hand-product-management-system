@@ -142,4 +142,59 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
+
+
+
+
+
+    public function searchProduct()
+{
+    // Example sorted array (IMPORTANT: must be sorted)
+    $productIds = Product::orderBy('id')->pluck('id')->toArray();
+
+    $target = 5; // example ID you want to search
+
+    $index = $this->binarySearch($productIds, $target);
+
+    if ($index !== -1) {
+        return response()->json([
+            'message' => 'Product found',
+            'index' => $index,
+            'product_id' => $productIds[$index]
+        ]);
+    }
+
+    return response()->json([
+        'message' => 'Product not found'
+    ]);
+}
+
+
+
+    private function binarySearch($array, $target)
+{
+    $low = 0;
+    $high = count($array) - 1;
+
+    while ($low <= $high) {
+        $mid = (int)(($low + $high) / 2);
+
+        if ($array[$mid] == $target) {
+            return $mid; // found index
+        }
+
+        if ($array[$mid] < $target) {
+            $low = $mid + 1;
+        } else {
+            $high = $mid - 1;
+        }
+    }
+
+    return -1; // not found
+}
+
+
+
+
+
 }
