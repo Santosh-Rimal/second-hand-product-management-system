@@ -41,6 +41,7 @@ class ProductController extends Controller
         // dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'quantity' => 'required|integer',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'images' => 'nullable|array',
@@ -94,6 +95,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'quantity' => 'required|integer',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
             'images' => 'nullable|array',
