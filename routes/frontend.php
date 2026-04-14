@@ -1,13 +1,14 @@
 <?php
 
-use Inertia\Inertia;
-use App\Models\Product;
-use App\Models\Category;
-use Laravel\Fortify\Features;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LoginController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\frontend\CartController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProductController;
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     // return Product::with(['category', 'seller'])->limit(10)->get();
@@ -67,6 +68,8 @@ Route::get('/product/details/{id}', function ($id) {
 })->name('details');
 
 
+
+Route::get('/search',[ProductController::class,'searchProduct'])->name('searchProduct');
 
 
 Route::get('/signinform',[LoginController::class,'signinform'])->name('signinform');

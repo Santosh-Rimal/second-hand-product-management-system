@@ -5,12 +5,14 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     Home,
     Package,
+    Search,
     Info,
     Phone,
     ShoppingCart,
     LogIn,
     UserPlus,
 } from 'lucide-react';
+import { useState } from 'react';
 
 const Header = ({ canRegister }: { canRegister: boolean }) => {
     const { auth } = usePage<SharedData>().props;
@@ -20,10 +22,22 @@ const Header = ({ canRegister }: { canRegister: boolean }) => {
 
     const isActive = (path: string) =>
         url === path || url.startsWith(path + '/');
+
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Implement search functionality here, e.g., redirect to a search results page
+        console.log('Searching for:', searchQuery);
+        // Example: redirect to search results page
+        // router.visit(`/search?query=${encodeURIComponent(searchQuery)}`);
+        
+
+    };
     return (
-        <header className="mb-6 w-full max-w-[335px] text-sm lg:max-w-6xl">
+        <header className="w-full bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-gray-200/50 sticky top-0 z-50">
             <nav className="flex items-center justify-between rounded-2xl bg-white/90 backdrop-blur-xl px-6 py-4 shadow-lg ring-1 ring-gray-200/50">
-                {/* Logo */}
+                {/* Logo - unchanged */}
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#f53003] to-[#ff6b35] shadow-lg shadow-orange-500/20 flex items-center justify-center">
                         <span className="text-white font-bold text-lg">S</span>
@@ -32,6 +46,22 @@ const Header = ({ canRegister }: { canRegister: boolean }) => {
                         SecondHand<span className="text-[#f53003]">Mart</span>
                     </span>
                 </div>
+                <form onSubmit={handleSearch} className="relative mx-4 flex-1 max-w-md">
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search products..."
+                        className="w-full px-4 py-2 pl-10 pr-4 rounded-full border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#f53003] focus:border-transparent transition-all"
+                    />
+                    <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                    <button
+                        type="submit"
+                        className="absolute right-2 top-1 px-3 py-1 text-sm bg-[#f53003] text-white rounded-full hover:bg-[#d42a02] transition"
+                    >
+                        Go
+                    </button>
+                </form>
 
                 {/* Links */}
                 <div className="flex items-center gap-2">
