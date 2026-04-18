@@ -145,44 +145,46 @@ class ProductController extends Controller
     }
 
 
+
+
  public function searchProduct(Request $request)
- {
- $target = strtolower(trim($request->input('query')));
+{
+    $target = strtolower(trim($request->input('query')));
 
- if (!$target) {
- return Inertia::render('frontend/search', [
- 'product' => null,
- 'message' => 'No product name provided',
- 'canRegister' => Features::enabled(Features::registration()),
- ]);
- }
+    if (!$target) {
+        return response()->json([
+            'message' => 'No product name provided'
+        ], 400);
+    }
 
- // Get products sorted by name
- $products = Product::orderBy('name')->get(['id', 'name']);
+    // Load products with relations + total_sold
+    $products = Product::with(['category', 'seller'])
+        ->withSum('orderItems as total_sold', 'quantity')
+        ->orderBy('name')
+        ->get();
 
- // Convert names to lowercase
- $productNames = $products->pluck('name')
- ->map(fn($name) => strtolower($name))
- ->values() // ✅ ensure proper indexing
- ->toArray();
+    // Extract lowercase names
+    $productNames = $products->pluck('name')
+        ->map(fn($name) => strtolower($name))
+        ->toArray();
 
- // Binary search
- $index = $this->binarySearch($productNames, $target);
- if ($index !== -1) {
- return Inertia::render('frontend/search', [
- 'products' => $products[$index], // ✅ single product
- 'message' => 'Product found',
- 'canRegister' => Features::enabled(Features::registration()),
- ]);
- }
+    // Binary search
+    $index = $this->binarySearch($productNames, $target);
 
- return Inertia::render('frontend/search', [
- 'product' => null,
- 'message' => 'Product not found',
- 'canRegister' => Features::enabled(Features::registration()),
- ]);
- }
+    if ($index !== -1) {
 
+        $products = $products[$index];
+        // Inertia response (ONLY if product found)
+        return Inertia::render('frontend/search', [
+            'products' => [$products],
+            'canRegister' => Features::enabled(Features::registration()),
+        ]);
+    }
+
+    return response()->json([
+        'message' => 'Product not found'
+    ], 404);
+}
  private function binarySearch(array $array, string $target): int
  {
  $low = 0;
@@ -190,5 +192,8 @@ class ProductController extends Controller
 
  while ($low <= $high) { $mid=(int)(($low + $high) / 2); if ($array[$mid]===$target) { return $mid; } if ($array[$mid] <
      $target) { $low=$mid + 1; } else { $high=$mid - 1; } } return -1; }
+     
+
+
 
 }
