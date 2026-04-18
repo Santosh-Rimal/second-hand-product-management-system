@@ -1,7 +1,7 @@
 import CartController from '@/actions/App/Http/Controllers/frontend/CartController';
-import { dashboard, userdashboard, login, register, signinform } from '@/routes';
+import { dashboard, userdashboard, login, register, signinform, searchProduct } from '@/routes';
 import { type SharedData } from '@/types';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import {
     Home,
     Package,
@@ -27,11 +27,11 @@ const Header = ({ canRegister }: { canRegister: boolean }) => {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        // Implement search functionality here, e.g., redirect to a search results page
+        router.get(searchProduct(), { query: searchQuery }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
         console.log('Searching for:', searchQuery);
-        // Example: redirect to search results page
-        // router.visit(`/search?query=${encodeURIComponent(searchQuery)}`);
-        
 
     };
     return (

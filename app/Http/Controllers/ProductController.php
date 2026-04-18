@@ -9,6 +9,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Fortify\Features;
 
 class ProductController extends Controller
 {
@@ -144,57 +145,50 @@ class ProductController extends Controller
     }
 
 
+ public function searchProduct(Request $request)
+ {
+ $target = strtolower(trim($request->input('query')));
 
+ if (!$target) {
+ return Inertia::render('frontend/search', [
+ 'product' => null,
+ 'message' => 'No product name provided',
+ 'canRegister' => Features::enabled(Features::registration()),
+ ]);
+ }
 
+ // Get products sorted by name
+ $products = Product::orderBy('name')->get(['id', 'name']);
 
-    public function searchProduct()
-{
-    // Example sorted array (IMPORTANT: must be sorted)
-    $productIds = Product::orderBy('id')->pluck('id')->toArray();
+ // Convert names to lowercase
+ $productNames = $products->pluck('name')
+ ->map(fn($name) => strtolower($name))
+ ->values() // ✅ ensure proper indexing
+ ->toArray();
 
-    $target = 5; // example ID you want to search
+ // Binary search
+ $index = $this->binarySearch($productNames, $target);
+ if ($index !== -1) {
+ return Inertia::render('frontend/search', [
+ 'products' => $products[$index], // ✅ single product
+ 'message' => 'Product found',
+ 'canRegister' => Features::enabled(Features::registration()),
+ ]);
+ }
 
-    $index = $this->binarySearch($productIds, $target);
+ return Inertia::render('frontend/search', [
+ 'product' => null,
+ 'message' => 'Product not found',
+ 'canRegister' => Features::enabled(Features::registration()),
+ ]);
+ }
 
-    if ($index !== -1) {
-        return response()->json([
-            'message' => 'Product found',
-            'index' => $index,
-            'product_id' => $productIds[$index]
-        ]);
-    }
+ private function binarySearch(array $array, string $target): int
+ {
+ $low = 0;
+ $high = count($array) - 1;
 
-    return response()->json([
-        'message' => 'Product not found'
-    ]);
-}
-
-
-
-    private function binarySearch($array, $target)
-{
-    $low = 0;
-    $high = count($array) - 1;
-
-    while ($low <= $high) {
-        $mid = (int)(($low + $high) / 2);
-
-        if ($array[$mid] == $target) {
-            return $mid; // found index
-        }
-
-        if ($array[$mid] < $target) {
-            $low = $mid + 1;
-        } else {
-            $high = $mid - 1;
-        }
-    }
-
-    return -1; // not found
-}
-
-
-
-
+ while ($low <= $high) { $mid=(int)(($low + $high) / 2); if ($array[$mid]===$target) { return $mid; } if ($array[$mid] <
+     $target) { $low=$mid + 1; } else { $high=$mid - 1; } } return -1; }
 
 }

@@ -5,6 +5,7 @@ import { SharedData, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Package, ShoppingCart, CheckCircle, Clock, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -83,7 +84,12 @@ export default function AdminDashboard({
             trend: '+18%'
         },
     ];
+    const pieData = [
+        { name: 'Completed', value: completeorders },
+        { name: 'Pending', value: pendingorders },
+    ];
 
+    const COLORS = ['#10b981', '#f59e0b']; // emerald & amber
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Admin Dashboard" />
@@ -124,6 +130,31 @@ export default function AdminDashboard({
                             </Card>
                         );
                     })}
+                </div>
+
+                {/* Pie Chart */}
+                <div className="mt-6">
+                    <h3 className="text-sm font-medium mb-2">Orders Distribution</h3>
+                    <div className="h-64 w-full">
+                        <ResponsiveContainer>
+                            <PieChart>
+                                <Pie
+                                    data={pieData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={50}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    {pieData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
 
                 {/* Main Content Grid */}
